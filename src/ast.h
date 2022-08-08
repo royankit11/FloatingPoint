@@ -97,6 +97,78 @@ public:
   
 };
 
+class Subtract : public Expression {
+  Expression *m_left, *m_right;
+
+public:
+   
+  Subtract (Expression *left, Expression *right): m_left (left), m_right (right) {}
+
+  // Copy constructor
+  Subtract (const Subtract &other) {
+    m_left = other.m_left->clone ();
+    m_right = other.m_right->clone ();
+  }
+
+  virtual ~Subtract ()
+  {
+    delete m_left;
+    delete m_right;
+  }
+
+  Subtract &operator = (const Subtract &other) {
+    if (&other != this) {
+      delete m_left;
+      delete m_right;
+      
+      m_left = other.m_left->clone ();
+      m_right = other.m_right->clone ();
+    }
+  }
+  
+
+  virtual Expression *clone () { return new Subtract (*this); }
+  
+  virtual int value () { return m_left->value () - m_right->value (); }
+  
+};
+
+class Divide : public Expression {
+  Expression *m_left, *m_right;
+
+public:
+   
+  Divide (Expression *left, Expression *right): m_left (left), m_right (right) {}
+
+  // Copy constructor
+  Divide (const Divide &other) {
+    m_left = other.m_left->clone ();
+    m_right = other.m_right->clone ();
+  }
+
+  virtual ~Divide ()
+  {
+    delete m_left;
+    delete m_right;
+  }
+
+  Divide &operator = (const Divide &other) {
+    if (&other != this) {
+      delete m_left;
+      delete m_right;
+      
+      m_left = other.m_left->clone ();
+      m_right = other.m_right->clone ();
+    }
+  }
+  
+
+  virtual Expression *clone () { return new Divide (*this); }
+  
+  virtual int value () { return m_left->value () / m_right->value (); }
+  
+};
+
 // For numbers
 class Number : public Expression {
   int m_val;
