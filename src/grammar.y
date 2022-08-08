@@ -39,6 +39,7 @@
 /* Precedence information to resolve ambiguity */
 %left '+'
 %left '*'
+%left '-'
 %%
 
 prompt : exp  '\n'             { 
@@ -67,7 +68,19 @@ exp : exp '+' exp              {
                                  nodes.pop ();  // The same as above.
                                  nodes.pop ();
                                  nodes.push ($$);
-                               } 
+                                }
+    | exp '-' exp              {
+                                  $$ = new Subtract ($1, $3);
+                                  nodes.pop ();  // The same as above.
+                                  nodes.pop ();
+                                  nodes.push ($$);
+                               }
+    | exp '/' exp              {
+                                  $$ = new Divide ($1, $3);
+                                  nodes.pop ();  // The same as above.
+                                  nodes.pop ();
+                                  nodes.push ($$);
+                               }
     | IDENT                    { $$ = new Ident (&vars [$1 - 'A']); nodes.push ($$); } 
     | NUMBER                   { $$ = new Number ($1); nodes.push ($$); } 
     | IDENT '=' exp            { vars [$1 - 'A'] = $3->value (); $$ = $3; nodes.push ($$); } 
@@ -110,7 +123,7 @@ int yylex ()
      yylval.value = value;
      return NUMBER;
   }
-  else if (ch == '+' || ch == '\n' || ch == '*' || ch == '=') {
+  else if (ch == '+' || ch == '\n' || ch == '-' || ch == '/' ||ch == '*' || ch == '=') {
      cin.get ();
  
      return ch;
