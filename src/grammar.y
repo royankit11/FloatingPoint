@@ -37,9 +37,8 @@
 %type <ident> IDENT
 
 /* Precedence information to resolve ambiguity */
-%left '+'
-%left '*'
-%left '-'
+%left '+' '-'
+%left '*' '/'
 %%
 
 prompt : exp  '\n'             { 
