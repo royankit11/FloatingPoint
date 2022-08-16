@@ -16,30 +16,30 @@ public:
   virtual ~Expression () {}
 
   // The value represented by the expression
-    virtual int value () = 0;
+    virtual int evaluate () = 0;
 };
 
 // For numbers
 class Number : public Expression {
     int m_val;
 
-    public:
+public:
    
-        Number (int val): m_val (val) {}
+    Number (int val): m_val (val) {}
 
-        virtual int value () { return m_val; }
-    };
+    virtual int evaluate () { return m_val; }
+};
 
 // For identifiers
 class Ident : public Expression {
     int m_val;
 
-    public:
+public:
    
-        Ident (int val): m_val (val) {}
-  
+    Ident (int val): m_val (val) {}
 
-        virtual int value () { return m_val; }
+
+    virtual int evaluate () { return m_val; }
 };
 
 
@@ -48,23 +48,23 @@ class Binary : public Expression {
     Expression *m_left, *m_right;
     char m_oper;
 
-    public:
+public:
    
-        Binary (Expression *left, char oper, Expression *right): m_left (left), m_oper (oper), m_right (right) {}
+    Binary (Expression *left, char oper, Expression *right): m_left (left), m_oper (oper), m_right (right) {}
 
-   
-        virtual int value () {
-            if (m_oper == '+') {
-                return m_left->value () + m_right->value ();
-            } else if (m_oper == '*') {
-                return m_left->value () * m_right->value ();
-            } else if (m_oper == '-') {
-                return m_left->value () - m_right->value ();
-            } else {
-                return m_left->value () / m_right->value ();
-            }
-            
+
+    virtual int evaluate () {
+        if (m_oper == '+') {
+            return m_left->evaluate () + m_right->evaluate ();
+        } else if (m_oper == '*') {
+            return m_left->evaluate () * m_right->evaluate ();
+        } else if (m_oper == '-') {
+            return m_left->evaluate () - m_right->evaluate ();
+        } else {
+            return m_left->evaluate () / m_right->evaluate ();
         }
+        
+    }
     
 };
 //unary expressions
@@ -72,19 +72,19 @@ class Unary : public Expression {
     Expression *m_right;
     char m_oper;
 
-    public:
+public:
    
-        Unary (Expression *right, char oper): m_oper (oper), m_right (right) {}
+    Unary (Expression *right, char oper): m_oper (oper), m_right (right) {}
 
-   
-        virtual int value () {
-            if (m_oper == '+') {
-                return m_right->value ();
-            } else {
-                return m_right->value ();
-            }
-            
+
+    virtual int evaluate () {
+        if (m_oper == '+') {
+            return m_right->evaluate ();
+        } else {
+            return 0 - m_right->evaluate ();
         }
+        
+    }
     
 };
 
