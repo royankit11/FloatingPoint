@@ -11,7 +11,7 @@
 
 #endif
 
-class Expression {
+struct Expression {
 public:
   virtual ~Expression () {}
 
