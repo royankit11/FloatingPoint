@@ -41,7 +41,7 @@
 %left '*' '/'
 %%
 
-prompt : exp  '\n'             { 
+prompt : exp  '\n'             {
                                  if ($1) {
                                    cout << $1->value () << endl;
                                    clear_stack ();
@@ -56,33 +56,42 @@ prompt : exp  '\n'             {
        | error '\n'            { clear_stack (); }
        ;
 
-exp : exp '+' exp              {
-                                 $$ = new Plus ($1, $3);
+exp : IDENT                    {
+                                $$ = new Ident ($1);
+                                nodes.push ($$);
+                                }
+    | NUMBER                   { $$ = new Number ($1); nodes.push ($$); }
+    | exp '+' exp              {
+                                 $$ = new Binary ($1, '+', $3);
                                  nodes.pop ();  //  The childreen are handled by Plus so we
-                                 nodes.pop ();  // take them of the allocated nodes stack.
                                  nodes.push ($$);
                                }
     | exp '*' exp              {
-                                 $$ = new Times ($1, $3);
+                                 $$ = new Binary ($1, '*', $3);
                                  nodes.pop ();  // The same as above.
-                                 nodes.pop ();
                                  nodes.push ($$);
                                 }
     | exp '-' exp              {
-                                  $$ = new Subtract ($1, $3);
+                                  $$ = new Binary ($1, '-', $3);
                                   nodes.pop ();  // The same as above.
-                                  nodes.pop ();
                                   nodes.push ($$);
                                }
     | exp '/' exp              {
-                                  $$ = new Divide ($1, $3);
+                                  $$ = new Binary ($1, '/', $3);
                                   nodes.pop ();  // The same as above.
-                                  nodes.pop ();
                                   nodes.push ($$);
                                }
-    | IDENT                    { $$ = new Ident (&vars [$1 - 'A']); nodes.push ($$); } 
-    | NUMBER                   { $$ = new Number ($1); nodes.push ($$); } 
-    | IDENT '=' exp            { vars [$1 - 'A'] = $3->value (); $$ = $3; nodes.push ($$); } 
+    | '+' exp                  {
+                                  $$ = new Unary ($2, '+');
+                                  nodes.pop ();  // The same as above.
+                                  nodes.push ($$);
+                               }
+    | '-' exp                  {
+                                  $$ = new Unary ($2, '-');
+                                  nodes.pop ();  // The same as above.
+                                  nodes.push ($$);
+                               }
+    | IDENT '=' exp            { vars [$1 - 'A'] = $3->value (); $$ = $3; nodes.push ($$); }
     ;
 %%
 
