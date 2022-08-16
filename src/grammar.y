@@ -43,13 +43,13 @@
 
 prompt : exp  '\n'             {
                                  if ($1) {
-                                   cout << $1->value () << endl;
+                                   cout << $1->evaluate () << endl;
                                    clear_stack ();
                                  }
                                }
        |  prompt  exp  '\n'    {
                                  if ($2) {
-                                   cout << $2->value () << endl;
+                                   cout << $2->evaluate () << endl;
                                    clear_stack ();
                                  }
                                }
@@ -91,7 +91,7 @@ exp : IDENT                    {
                                   nodes.pop ();  // The same as above.
                                   nodes.push ($$);
                                }
-    | IDENT '=' exp            { vars [$1 - 'A'] = $3->value (); $$ = $3; nodes.push ($$); }
+    | IDENT '=' exp            { vars [$1 - 'A'] = $3->evaluate (); $$ = $3; nodes.push ($$); }
     ;
 %%
 
