@@ -28,7 +28,7 @@
 %union {
   Expression *exp;  /* For the expressions. Since it is a pointer, no problem. */
   int       value;  /* For the lexical analyser. NUMBER tokens */
-  char      ident;  /* For the lexical analyser. IDENT tokens */
+  std::string     *ident;  /* For the lexical analyser. IDENT tokens */
 }
 
 /* Lets inform Bison about the type of each terminal and non-terminal */
@@ -41,57 +41,44 @@
 %left '*' '/'
 %%
 
-prompt : exp  '\n'             {
-                                 if ($1) {
-                                   cout << $1->evaluate () << endl;
-                                   clear_stack ();
-                                 }
-                               }
-       |  prompt  exp  '\n'    {
-                                 if ($2) {
-                                   cout << $2->evaluate () << endl;
-                                   clear_stack ();
-                                 }
-                               }
+prompt : exp  '\n'              {
+                                  }
+        |  prompt  exp  '\n'    {
+                                }
        | error '\n'            { clear_stack (); }
        ;
 
 exp : IDENT                    {
-                                $$ = new Ident ($1);
-                                nodes.push ($$);
+                                $$ = new Ident($1);
+                                nodes.push($$);
                                 }
-    | NUMBER                   { $$ = new Number ($1); nodes.push ($$); }
+    | NUMBER                   { $$ = new Number ($1);
+                                
+                                }
     | exp '+' exp              {
                                  $$ = new Binary ($1, '+', $3);
-                                 nodes.pop ();  //  The childreen are handled by Plus so we
                                  nodes.push ($$);
                                }
     | exp '*' exp              {
                                  $$ = new Binary ($1, '*', $3);
-                                 nodes.pop ();  // The same as above.
                                  nodes.push ($$);
                                 }
     | exp '-' exp              {
                                   $$ = new Binary ($1, '-', $3);
-                                  nodes.pop ();  // The same as above.
                                   nodes.push ($$);
                                }
     | exp '/' exp              {
                                   $$ = new Binary ($1, '/', $3);
-                                  nodes.pop ();  // The same as above.
                                   nodes.push ($$);
                                }
     | '+' exp                  {
                                   $$ = new Unary ($2, '+');
-                                  nodes.pop ();  // The same as above.
                                   nodes.push ($$);
                                }
     | '-' exp                  {
                                   $$ = new Unary ($2, '-');
-                                  nodes.pop ();  // The same as above.
                                   nodes.push ($$);
                                }
-    | IDENT '=' exp            { vars [$1 - 'A'] = $3->evaluate (); $$ = $3; nodes.push ($$); }
     ;
 %%
 
@@ -100,6 +87,8 @@ int main ()
 {
   memset (vars, 0, sizeof (vars));
   return yyparse ();
+
+
 }
 
 void yyerror (const char *error)
@@ -112,11 +101,19 @@ int yylex ()
   char ch;
 
   do {
+      
    ch = cin.peek ();
    if (isalpha (ch)) {
-     cin.get ();
+       std::string identifier = "";
+       while (!cin.eof () && isalpha (ch)) {
+         cin.get ();
 
-     yylval.ident = ch;
+         identifier = identifier + std::string(1, ch);
+         ch = cin.peek ();
+       }
+
+     yylval.ident = &identifier;
+
      return IDENT;
    }
    else if (isdigit (ch)) {
@@ -135,7 +132,13 @@ int yylex ()
      cin.get ();
  
      return ch;
-  }
+  } else if (cin.eof()) {
+      while (!nodes.empty ()) {
+        cout << nodes.top() -> evaluate() << endl;
+        nodes.pop ();
+      }
+      return YYEOF;
+   }
   else
     cin.get ();
 
