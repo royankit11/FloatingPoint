@@ -79,6 +79,10 @@ exp : IDENT                    {
                                   $$ = new Unary ($2, '-');
                                   nodes.push ($$);
                                }
+    | IDENT '=' exp            {
+                                  $$ = new Assign ($1, $3);
+                                  nodes.push ($$);
+                               }
     ;
 %%
 
@@ -111,8 +115,9 @@ int yylex ()
          identifier = identifier + std::string(1, ch);
          ch = cin.peek ();
        }
-
+       
      yylval.ident = &identifier;
+     cout << *yylval.ident << endl;
 
      return IDENT;
    }
