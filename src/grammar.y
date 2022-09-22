@@ -20,7 +20,8 @@
   int vars ['Z'- 'A' + 1];
 
   // stack class that takes care of all the nodes that were allocated
-  stack <Expression *> nodes;
+  //stack <Expression *> nodes;
+  vector<Expression *> nodes;
 %}
 
 %token IDENT NUMBER
@@ -50,38 +51,38 @@ prompt : exp  '\n'              {
 
 exp : IDENT                    {
                                 $$ = new Ident($1);
-                                nodes.push($$);
+                                nodes.push_back($$);
                                 }
     | NUMBER                   { $$ = new Number ($1);
                                 
                                 }
     | exp '+' exp              {
                                  $$ = new Binary ($1, '+', $3);
-                                 nodes.push ($$);
+                                 nodes.push_back ($$);
                                }
     | exp '*' exp              {
                                  $$ = new Binary ($1, '*', $3);
-                                 nodes.push ($$);
+                                 nodes.push_back ($$);
                                 }
     | exp '-' exp              {
                                   $$ = new Binary ($1, '-', $3);
-                                  nodes.push ($$);
+                                  nodes.push_back ($$);
                                }
     | exp '/' exp              {
                                   $$ = new Binary ($1, '/', $3);
-                                  nodes.push ($$);
+                                  nodes.push_back ($$);
                                }
     | '+' exp                  {
                                   $$ = new Unary ($2, '+');
-                                  nodes.push ($$);
+                                  nodes.push_back ($$);
                                }
     | '-' exp                  {
                                   $$ = new Unary ($2, '-');
-                                  nodes.push ($$);
+                                  nodes.push_back ($$);
                                }
     | IDENT '=' exp            {
                                   $$ = new Assign ($1, $3);
-                                  nodes.push ($$);
+                                  nodes.push_back ($$);
                                }
     ;
 %%
@@ -117,7 +118,6 @@ int yylex ()
        }
        
      yylval.ident = &identifier;
-     cout << *yylval.ident << endl;
 
      return IDENT;
    }
@@ -138,10 +138,10 @@ int yylex ()
  
      return ch;
   } else if (cin.eof()) {
-      while (!nodes.empty ()) {
-        cout << nodes.top() -> evaluate() << endl;
-        nodes.pop ();
+      for(int i = 0; i < nodes.size(); i++) {
+          cout << nodes.at(i) -> evaluate() << endl;
       }
+      nodes.clear();
       return YYEOF;
    }
   else
@@ -156,8 +156,5 @@ int yylex ()
 // Deletes all the nodes that were allocated
 void clear_stack ()
 {
-  while (!nodes.empty ()) {
-    delete nodes.top ();
-    nodes.pop ();
-  }
+    nodes.clear();
 }
