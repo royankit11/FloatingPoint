@@ -84,3 +84,20 @@ public:
     }
     
 };
+
+class Assign : public Expression {
+    std::string *m_var;
+    Expression *m_right;
+
+public:
+   
+    Assign (std::string *var, Expression *right): m_var (var), m_right (right)  {
+        }
+
+
+    virtual std::string evaluate () {
+        return *m_var + "=" + m_right->evaluate();
+        
+    }
+    
+};
