@@ -82,6 +82,7 @@ exp : IDENT                    {
                                }
     | IDENT '=' exp            {
                                   $$ = new Assign ($1, $3);
+                                  
                                   nodes.push_back ($$);
                                }
     ;
@@ -109,15 +110,14 @@ int yylex ()
       
    ch = cin.peek ();
    if (isalpha (ch)) {
-       std::string identifier = "";
+       std::string* identifier = new std::string();
        while (!cin.eof () && isalpha (ch)) {
          cin.get ();
 
-         identifier = identifier + std::string(1, ch);
+         *identifier += std::string(1, ch);
          ch = cin.peek ();
        }
-       
-     yylval.ident = &identifier;
+     yylval.ident = identifier;
 
      return IDENT;
    }
