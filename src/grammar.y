@@ -4,7 +4,7 @@
   #include <cstring>
   #include <vector>
   #include <stack>
-
+    #include <map>
   #include "ast.h"
 
   // Bring the standard library into the
@@ -51,10 +51,9 @@ prompt : exp  '\n'              {
 
 exp : IDENT                    {
                                 $$ = new Ident($1);
-                                nodes.push_back($$);
+                                nodes.push_back ($$);
                                 }
     | NUMBER                   { $$ = new Number ($1);
-                                
                                 }
     | exp '+' exp              {
                                  $$ = new Binary ($1, '+', $3);
@@ -82,7 +81,6 @@ exp : IDENT                    {
                                }
     | IDENT '=' exp            {
                                   $$ = new Assign ($1, $3);
-                                  
                                   nodes.push_back ($$);
                                }
     ;
