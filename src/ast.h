@@ -147,6 +147,20 @@ public:
 class Unary : public Expression {
     Expression *m_right;
     char m_oper;
+    
+private:
+    bool isExpAVariable(std::string s) {
+        for(int i = 0; i < s.length(); i++) {
+            if (isdigit(s[i]) == true){
+                return false;
+            }
+        }
+        
+        if(VariableStorage::doesVariableExist(s)) {
+            return true;
+        }
+        return false;
+    }
 
 public:
    
@@ -161,11 +175,22 @@ public:
         }
         
     }
+    
+    
     virtual int evaluate () {
+        
+        int right;
+        
+        if(isExpAVariable(m_right->toString())) {
+            right = VariableStorage::findVariableValue(m_right->toString());
+        }else {
+            right = m_right->evaluate();
+        }
+        
         if (m_oper == '+') {
-            return m_right->evaluate();
+            return right;
         } else {
-            return  0 - m_right->evaluate ();
+            return  0 - right;
         }
         
     };
