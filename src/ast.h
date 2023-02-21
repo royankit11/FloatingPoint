@@ -7,31 +7,48 @@
 
 #endif
 
-namespace VariableStorage {
+class VariableStorage {
 
-    static std::map<std::string, int> m;
 
-    static bool doesVariableExist(std::string var) {
+    
+public:
+    std::map<std::string, int> m;
+
+    bool doesVariableExist(std::string var) {
         if(m.find(var) != m.end()) {
             return true;
         }
         return false;
     }
     
-    static int findVariableValue(std::string variable) {
+    int findVariableValue(std::string variable) {
         return m[variable];
     }
     
-    static void assignVariable(std::string var, int val) {
+    void assignVariable(std::string var, int val) {
         m[var] = val;
     }
+    
+    bool isExpAVariable(std::string s) {
+        for(int i = 0; i < s.length(); i++) {
+            if (isdigit(s[i]) == true){
+                return false;
+            }
+        }
+        
+        if(doesVariableExist(s)) {
+            return true;
+        }
+        return false;
+    }
+
 };
 
 struct Expression {
 public:
   virtual ~Expression () {}
     virtual std::string toString () = 0;
-    virtual int evaluate () = 0;
+    virtual int evaluate (VariableStorage manager) = 0;
 
 };
 
@@ -44,7 +61,7 @@ public:
     Number (int val): m_val (val) {}
 
     virtual std::string toString () { return std::to_string(m_val); }
-    virtual int evaluate () {
+    virtual int evaluate (VariableStorage manager) {
         return m_val;
         
     };
@@ -63,7 +80,7 @@ public:
     }
 
     virtual std::string toString () { return *m_val;}
-    virtual int evaluate () {
+    virtual int evaluate (VariableStorage manager) {
         /*if(m_map.find(*m_val) != m_map.end()) {
             return m_map[*m_val];
         } else {
@@ -80,19 +97,7 @@ class Binary : public Expression {
     char m_oper;
     
 private:
-    bool isExpAVariable(std::string s) {
-        for(int i = 0; i < s.length(); i++) {
-            if (isdigit(s[i]) == true){
-                return false;
-            }
-        }
-        
-        if(VariableStorage::doesVariableExist(s)) {
-            return true;
-        }
-        return false;
-    }
-
+    
 public:
    
     Binary (Expression *left, char oper, Expression *right): m_left (left), m_oper (oper), m_right (right) {}
@@ -110,21 +115,21 @@ public:
         }
         
     }
-    virtual int evaluate () {
+    virtual int evaluate (VariableStorage manager) {
         int left;
         int right;
         
         
-        if(isExpAVariable(m_left->toString())) {
-            left = VariableStorage::findVariableValue(m_left->toString());
+        if(manager.isExpAVariable(m_left->toString())) {
+            left = manager.findVariableValue(m_left->toString());
         } else {
-            left = m_left->evaluate();
+            left = m_left->evaluate(manager);
         }
         
-        if(isExpAVariable(m_right->toString())) {
-            right = VariableStorage::findVariableValue(m_right->toString());
+        if(manager.isExpAVariable(m_right->toString())) {
+            right = manager.findVariableValue(m_right->toString());
         }else {
-            right = m_right->evaluate();
+            right = m_right->evaluate(manager);
         }
         
         
@@ -148,20 +153,6 @@ class Unary : public Expression {
     Expression *m_right;
     char m_oper;
     
-private:
-    bool isExpAVariable(std::string s) {
-        for(int i = 0; i < s.length(); i++) {
-            if (isdigit(s[i]) == true){
-                return false;
-            }
-        }
-        
-        if(VariableStorage::doesVariableExist(s)) {
-            return true;
-        }
-        return false;
-    }
-
 public:
    
     Unary (Expression *right, char oper): m_oper (oper), m_right (right) {}
@@ -177,14 +168,14 @@ public:
     }
     
     
-    virtual int evaluate () {
+    virtual int evaluate (VariableStorage manager) {
         
         int right;
         
-        if(isExpAVariable(m_right->toString())) {
-            right = VariableStorage::findVariableValue(m_right->toString());
+        if(manager.isExpAVariable(m_right->toString())) {
+            right = manager.findVariableValue(m_right->toString());
         }else {
-            right = m_right->evaluate();
+            right = m_right->evaluate(manager);
         }
         
         if (m_oper == '+') {
@@ -211,9 +202,9 @@ public:
         return *m_var + "=" + m_right->toString();
         
     }
-    virtual int evaluate () {
-        int h = m_right->evaluate();
-        VariableStorage::assignVariable(*m_var, h);
+    virtual int evaluate (VariableStorage manager) {
+        int h = m_right->evaluate(manager);
+        manager.assignVariable(*m_var, h);
         return 0;
         
     };
