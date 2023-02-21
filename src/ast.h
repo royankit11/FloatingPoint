@@ -9,10 +9,11 @@
 
 class VariableStorage {
 
-
+    std::map<std::string, int> m;
     
 public:
-    std::map<std::string, int> m;
+    
+    VariableStorage(std::map<std::string, int> map): m (map){}
 
     bool doesVariableExist(std::string var) {
         if(m.find(var) != m.end()) {
@@ -61,7 +62,7 @@ public:
     Number (int val): m_val (val) {}
 
     virtual std::string toString () { return std::to_string(m_val); }
-    virtual int evaluate (VariableStorage manager) {
+    virtual int evaluate (&VariableStorage manager) {
         return m_val;
         
     };
@@ -80,7 +81,7 @@ public:
     }
 
     virtual std::string toString () { return *m_val;}
-    virtual int evaluate (VariableStorage manager) {
+    virtual int evaluate (&VariableStorage manager) {
         /*if(m_map.find(*m_val) != m_map.end()) {
             return m_map[*m_val];
         } else {
@@ -115,7 +116,7 @@ public:
         }
         
     }
-    virtual int evaluate (VariableStorage manager) {
+    virtual int evaluate (&VariableStorage manager) {
         int left;
         int right;
         
@@ -168,7 +169,7 @@ public:
     }
     
     
-    virtual int evaluate (VariableStorage manager) {
+    virtual int evaluate (&VariableStorage manager) {
         
         int right;
         
@@ -202,7 +203,7 @@ public:
         return *m_var + "=" + m_right->toString();
         
     }
-    virtual int evaluate (VariableStorage manager) {
+    virtual int evaluate (&VariableStorage manager) {
         int h = m_right->evaluate(manager);
         manager.assignVariable(*m_var, h);
         return 0;
