@@ -136,8 +136,11 @@ int yylex ()
  
      return ch;
   } else if (cin.eof()) {
+      auto variableManager = VariableStorage();
+      
       for(int i = 0; i < nodes.size(); i++) {
-          cout << nodes.at(i) -> evaluate() << endl;
+          cout << variableManager.m.size() << endl;
+          cout << nodes.at(i) -> evaluate(variableManager) << endl;
       }
       nodes.clear();
       return YYEOF;
