@@ -139,7 +139,9 @@ int yylex ()
       auto variableManager = VariableStorage();
       
       for(int i = 0; i < nodes.size(); i++) {
-          cout << variableManager.m.size() << endl;
+          /*if (nodes.at(i) -> checkPrint()) {
+              cout << nodes.at(i) -> evaluate(variableManager) << endl;
+          }*/
           cout << nodes.at(i) -> evaluate(variableManager) << endl;
       }
       nodes.clear();
