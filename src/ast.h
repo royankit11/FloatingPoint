@@ -52,7 +52,7 @@ struct Expression {
 public:
   virtual ~Expression () {}
     virtual std::string toString () = 0;
-    bool shouldPrint = true;
+    virtual bool shouldPrint() = 0;
     virtual int evaluate (VariableStorage& manager) = 0;
 
 };
@@ -60,13 +60,15 @@ public:
 // For numbers
 class Number : public Expression {
     int m_val;
-    bool shouldPrint = false;
 
 public:
    
     Number (int val): m_val (val) {}
 
     virtual std::string toString () { return std::to_string(m_val); }
+    virtual bool shouldPrint() {
+        return false;
+    }
     virtual int evaluate (VariableStorage& manager) {
         return m_val;
         
@@ -77,7 +79,6 @@ public:
 // For identifiers
 class Ident : public Expression {
     std::string *m_val;
-    bool shouldPrint = false;
 
 public:
    
@@ -87,6 +88,11 @@ public:
     }
 
     virtual std::string toString () { return *m_val;}
+    
+    virtual bool shouldPrint() {
+        return false;
+    }
+    
     virtual int evaluate (VariableStorage& manager) {
         /*if(m_map.find(*m_val) != m_map.end()) {
             return m_map[*m_val];
@@ -102,7 +108,6 @@ public:
 class Binary : public Expression {
     Expression *m_left, *m_right;
     char m_oper;
-    bool shouldPrint = true;
     
 private:
     
@@ -123,6 +128,11 @@ public:
         }
         
     }
+    
+    virtual bool shouldPrint() {
+        return true;
+    }
+    
     virtual int evaluate (VariableStorage& manager) {
         int left;
         int right;
@@ -160,7 +170,6 @@ public:
 class Unary : public Expression {
     Expression *m_right;
     char m_oper;
-    bool shouldPrint = true;
     
 public:
    
@@ -174,6 +183,10 @@ public:
             return "-" + m_right->toString ();
         }
         
+    }
+    
+    virtual bool shouldPrint() {
+        return true;
     }
     
     
@@ -200,7 +213,6 @@ public:
 class Assign : public Expression {
     std::string *m_var;
     Expression *m_right;
-    bool shouldPrint = false;
 
 public:
    
@@ -208,10 +220,16 @@ public:
         }
 
 
+
     virtual std::string toString () {
         return *m_var + "=" + m_right->toString();
         
     }
+    
+    virtual bool shouldPrint() {
+        return false;
+    }
+    
     virtual int evaluate (VariableStorage& manager) {
         int h = m_right->evaluate(manager);
         manager.assignVariable(*m_var, h);
