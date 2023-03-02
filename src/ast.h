@@ -103,6 +103,32 @@ public:
     };
 };
 
+class Boolean : public Expression {
+    bool m_boolean;
+    
+public:
+   
+    Boolean (bool boolean): m_boolean (boolean) {
+        //std::cout << *val << std::endl;
+        //std::cout << *m_val;
+    }
+
+    virtual std::string toString () {
+        if(m_boolean){
+            return "true";
+        }
+        return "false";
+    }
+    
+    virtual bool shouldPrint() {
+        return true;
+    }
+    
+    virtual int evaluate (VariableStorage& manager) {
+        return m_boolean;
+    };
+};
+
 
 // For binary expressions
 class Binary : public Expression {
