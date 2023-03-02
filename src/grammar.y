@@ -24,18 +24,22 @@
   vector<Expression *> nodes;
 %}
 
-%token IDENT NUMBER
+%token IDENT NUMBER bTRUE bFALSE
 
 %union {
   Expression *exp;  /* For the expressions. Since it is a pointer, no problem. */
   int       value;  /* For the lexical analyser. NUMBER tokens */
   std::string     *ident;  /* For the lexical analyser. IDENT tokens */
+  bool      booleanTrue;
+  bool      booleanFalse;
 }
 
 /* Lets inform Bison about the type of each terminal and non-terminal */
 %type <exp>   exp
 %type <value> NUMBER
 %type <ident> IDENT
+%type <booleanTrue> bTRUE
+%type <booleanFalse> bFALSE
 
 /* Precedence information to resolve ambiguity */
 %left '+' '-'
@@ -53,7 +57,16 @@ exp : IDENT                    {
                                 $$ = new Ident($1);
                                 nodes.push_back ($$);
                                 }
-    | NUMBER                   { $$ = new Number ($1);
+    | NUMBER                   {
+                                    $$ = new Number ($1);
+                                }
+    | bTRUE                     {
+                                    $$ = new Boolean(true);
+                                    nodes.push_back ($$);
+                                }
+    | bFALSE                    {
+                                    $$ = new Boolean(false);
+                                    nodes.push_back ($$);
                                 }
     | exp '+' exp              {
                                  $$ = new Binary ($1, '+', $3);
@@ -115,9 +128,19 @@ int yylex ()
          *identifier += std::string(1, ch);
          ch = cin.peek ();
        }
-     yylval.ident = identifier;
+       
+       if(*identifier == "true") {
+           yylval.booleanTrue = true;
+           return bTRUE;
+       } else if (*identifier == "false"){
+           yylval.booleanFalse = false;
+           return bFALSE;
+       } else {
+           yylval.ident = identifier;
 
-     return IDENT;
+           return IDENT;
+       }
+     
    }
    else if (isdigit (ch)) {
      int value = 0;
