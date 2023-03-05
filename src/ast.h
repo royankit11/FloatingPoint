@@ -94,12 +94,11 @@ public:
     }
     
     virtual int evaluate (VariableStorage& manager) {
-        /*if(m_map.find(*m_val) != m_map.end()) {
-            return m_map[*m_val];
+        if(manager.isExpAVariable(*m_val)) {
+            return manager.findVariableValue(*m_val);
         } else {
-            return 0;
-        }*/
-        return 0;
+            return -1;
+        }
     };
 };
 
@@ -133,24 +132,30 @@ public:
 // For binary expressions
 class Binary : public Expression {
     Expression *m_left, *m_right;
-    char m_oper;
+    std::string m_oper;
     
 private:
     
 public:
    
-    Binary (Expression *left, char oper, Expression *right): m_left (left), m_oper (oper), m_right (right) {}
+    Binary (Expression *left, std::string oper, Expression *right): m_left (left), m_oper (oper), m_right (right) {}
 
 
     virtual std::string toString () {
-        if (m_oper == '+') {
+        if (m_oper == "+") {
             return m_left->toString () + "+" + m_right->toString ();
-        } else if (m_oper == '*') {
+        } else if (m_oper == "*") {
             return m_left->toString () + "*" + m_right->toString ();
-        } else if (m_oper == '-') {
+        } else if (m_oper == "-") {
             return m_left->toString () + "-" + m_right->toString ();
-        } else {
+        } else if (m_oper == "/"){
             return m_left->toString () + "/" + m_right->toString ();
+        } else if (m_oper == ">"){
+            return m_left->toString () + ">" + m_right->toString ();
+        } else if (m_oper == "<"){
+            return m_left->toString () + "<" + m_right->toString ();
+        } else {
+            return "";
         }
         
     }
@@ -179,14 +184,26 @@ public:
         
         
         
-        if (m_oper == '+') {
+        if (m_oper == "+") {
             return left + right;
-        } else if (m_oper == '*') {
+        } else if (m_oper == "*") {
             return left * right;
-        } else if (m_oper == '-') {
+        } else if (m_oper == "-") {
             return left - right;
-        } else {
+        } else if (m_oper == "/") {
             return left / right;
+        } else if (m_oper == ">") {
+            return left > right;
+        } else if (m_oper == "<") {
+            return left < right;
+        } else if (m_oper == ">=") {
+            return left >= right;
+        } else if (m_oper == "<=") {
+            return left <= right;
+        } else if (m_oper == "==") {
+            return left == right;
+        } else {
+            return 0;
         }
 
     };
