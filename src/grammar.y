@@ -69,19 +69,27 @@ exp : IDENT                    {
                                     nodes.push_back ($$);
                                 }
     | exp '+' exp              {
-                                 $$ = new Binary ($1, '+', $3);
+                                 $$ = new Binary ($1, "+", $3);
                                  nodes.push_back ($$);
                                }
     | exp '*' exp              {
-                                 $$ = new Binary ($1, '*', $3);
+                                 $$ = new Binary ($1, "*", $3);
                                  nodes.push_back ($$);
                                 }
     | exp '-' exp              {
-                                  $$ = new Binary ($1, '-', $3);
+                                  $$ = new Binary ($1, "-", $3);
                                   nodes.push_back ($$);
                                }
     | exp '/' exp              {
-                                  $$ = new Binary ($1, '/', $3);
+                                  $$ = new Binary ($1, "/", $3);
+                                  nodes.push_back ($$);
+                               }
+    | exp '>' exp              {
+                                  $$ = new Binary ($1, ">", $3);
+                                  nodes.push_back ($$);
+                               }
+    | exp '<' exp              {
+                                  $$ = new Binary ($1, "<", $3);
                                   nodes.push_back ($$);
                                }
     | '+' exp                  {
@@ -135,7 +143,7 @@ int yylex ()
        } else if (*identifier == "false"){
            yylval.booleanFalse = false;
            return bFALSE;
-       } else {
+       }  else {
            yylval.ident = identifier;
 
            return IDENT;
@@ -154,15 +162,16 @@ int yylex ()
      yylval.value = value;
      return NUMBER;
   }
-  else if (ch == '+' || ch == '\n' || ch == '-' || ch == '/' ||ch == '*' || ch == '=') {
+  else if (ch == '+' || ch == '\n' || ch == '-' || ch == '/' ||ch == '*' || ch == '=' || ch == '>' || ch == '<') {
      cin.get ();
  
      return ch;
   } else if (cin.eof()) {
+
       auto variableManager = VariableStorage();
       
       for(int i = 0; i < nodes.size(); i++) {
-          int result = nodes.at(i) -> evaluate(variableManager);
+          auto result = nodes.at(i) -> evaluate(variableManager);
           
           if (nodes.at(i) -> shouldPrint() == true) {
               cout << result << endl;
