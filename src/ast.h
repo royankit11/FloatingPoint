@@ -7,6 +7,7 @@
 
 #endif
 
+// test comment
 class VariableStorage {
 
 private:
